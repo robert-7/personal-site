@@ -9,5 +9,12 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: pre-commit/action@v3.0.1
+      - uses: actions/checkout@v7.0.1
+      # Inlined pre-commit/action@v3.0.1: its latest release still pins the
+      # Node 20 actions/cache@v4, which triggers the Node 20 deprecation warning.
+      - run: python -m pip install pre-commit
+      - uses: actions/cache@v6.1.0
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit|${{ runner.os }}|${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: pre-commit run --show-diff-on-failure --color=always --all-files
