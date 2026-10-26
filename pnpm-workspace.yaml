@@ -4,7 +4,10 @@
 overrides:
   # vite must track Astro's bundled major. Astro 7 requires Vite 8 (^8.0.13);
   # forcing the old Vite 7 here breaks `astro build`. Bump this on each Astro major.
-  vite: ">=8.0.13"
+  # vite 8.2.0-8.2.3 has GHSA advisories fixed in 8.2.4: cross-origin script execution
+  # through custom middleware, server.fs.allow/server.fs bypasses, and launch-editor
+  # CLI flag/escaping/fs.existsSync issues (Dependabot alerts #34-#39).
+  vite: ">=8.2.4"
   esbuild: "0.28.1"
   # devalue >=5.6.3 <=5.8.0 has GHSA-77vg-94rm-hx3p (DoS via sparse array deserialization).
   # Astro pulls it in as a transitive dep. Force the patched version.
@@ -43,6 +46,14 @@ overrides:
   # sharp <0.35.0 inherits libvips CVE-2026-33327/33328/35590/35591. Pulled in transitively
   # via astro. Force 0.35.x (libvips 8.18.3); capped <0.36 to match astro's declared range.
   sharp: ">=0.35.0 <0.36"
+  # source-map-js <1.2.2 allows event-loop DoS through indexed source-map section offsets
+  # (Dependabot alert #32). Pulled in transitively via postcss/vite. Force the patch.
+  source-map-js: ">=1.2.2"
+  # http-cache-semantics <=4.2.0 has GHSA-ch52-4w7c-c8xp / CVE-2026-93748: max-stale
+  # handling can disclose cross-user cached responses (Dependabot alert #31). No patched
+  # version existed when the advisory was filed; 4.3.0 (released 2026-10-04) fixes it.
+  # Pulled in transitively via @astrojs/check / vscode-* tooling. Force the patch.
+  http-cache-semantics: ">=4.3.0"
 
 # ── Supply chain security ─────────────────────────────────────────────────────
 
